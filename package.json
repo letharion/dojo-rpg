@@ -16,7 +16,7 @@
     "watchify": "~2.1.0"
   },
   "scripts": {
-    "start": "watchify -o build/bundle.js -v -d .",
+    "start": "./node_modules/watchify/bin/cmd.js -o build/bundle.js -v -d .",
     "build": "browserify . | uglifyjs -cm > build/bundle.min.js"
   },
   "author": "Claes 'Letharion' Gyllensvärd",
