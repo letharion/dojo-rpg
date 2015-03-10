@@ -2,6 +2,7 @@ window.React = require('react');
 
 var BuildingList = require('./components/BuildingList.react');
 var ResetButton = require('./components/Reset.react');
+var ActionButton = require('./components/Action.react');
 
 React.render(
   <BuildingList />,
@@ -11,4 +12,9 @@ React.render(
 React.render(
   <ResetButton />,
   document.getElementById('controls')
+)
+
+React.render(
+  <ActionButton />,
+  document.getElementById('actions')
 )
