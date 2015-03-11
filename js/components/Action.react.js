@@ -1,3 +1,4 @@
+var AppDispatcher = require('../dispatcher/AppDispatcher');
 var Progress = require('react-progressbar');
 
 var complete;
@@ -12,13 +13,24 @@ var Action = React.createClass({
   },
 
   trigger: function() {
-    intervalTracker = setInterval(this.progress, 50);
+    // intervalTracker is set while the progressbar is running.
+    if (intervalTracker !== undefined) {
+      return;
+    }
+
+    // @TODO Should this be moved out to a pure action handler?
+    AppDispatcher.handleAction({
+      actionType: 'forage',
+    })
+
+    intervalTracker = setInterval(this.progress, 10);
   },
 
   progress: function() {
     complete += 1;
     if (complete >= 100) {
       clearInterval(intervalTracker);
+      intervalTracker = undefined;
       complete = 0;
     }
     this.replaceState({ "complete": complete });
@@ -26,6 +38,15 @@ var Action = React.createClass({
 
   render: function() {
     // @TODO Create a actions list component and move the button content out of here.
+    if (complete > 0) {
+      return (
+        <div className="action" >
+        <Progress completed={complete} />
+        Forage
+        </div>
+      );
+    }
+
     return (
       <div className="action" onClick={this.trigger} >
         <Progress completed={complete} />
