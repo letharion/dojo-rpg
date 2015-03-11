@@ -2,3 +2,4 @@ node_modules
 npm-debug.log
 js
 build/bundle.js
+build/.bundle.js
