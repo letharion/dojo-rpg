@@ -3,35 +3,43 @@ var EventEmitter = require('events').EventEmitter;
 var _ = require('underscore');
 
 // Resources
-var safety = 0;
+var resources = new Map();
 
 //////////////////
 // Store itself //
 //////////////////
 var ResourceStore = _.extend({}, EventEmitter.prototype, {
-  getSafety: function() {
-    return safety;
+  listResources: function() {
+    return [ 'safety', 'thoughts' ];
+  },
+
+  getResources: function() {
+    return resources;
+  },
+  getResource: function(resource) {
+    return resources.get(resource);
   },
 
   start: function() {
     var self = this;
     setInterval(function() {
       self.update();
-      self.tick();
+      self.emitChange();
     }, 1000);
   },
 
-  tick: function() {
-    this.emit('tick');
+  emitChange: function() {
+    this.emit('change');
   },
 
   addChangeListener: function(callback) {
-    this.on('tick', callback);
+    this.on('change', callback);
   },
 
   // @TODO Hide from external callers
   update: function() {
-    safety -= 1;
+    resources.set('safety', resources.get('safety') - 1);
+    resources.set('thoughts', resources.get('thoughts') + 1);
   },
 });
 
@@ -40,10 +48,9 @@ var ResourceStore = _.extend({}, EventEmitter.prototype, {
 ///////////////////////
 var storageKey = 'resources';
 var save = function() {
-  data = new Map([[ "safety", safety ]]);
   localStorage.setItem(
     storageKey,
-    JSON.stringify(Array.from(data.entries()))
+    JSON.stringify(Array.from(resources.entries()))
   );
 };
 
@@ -52,13 +59,21 @@ var load = function() {
   if (data === null) {
     return;
   }
-  data = new Map(JSON.parse(data));
-  safety = data.get('safety');
+  resources = new Map(JSON.parse(data));
+
+  for (var i = 0; i < ResourceStore.listResources().length; i++) {
+    if (resources.get(ResourceStore.listResources()[i]) === undefined) {
+      resources.set(ResourceStore.listResources()[i], 0);
+    }
+  }
 };
 
 var reset = function() {
-  safety = 0;
-  ResourceStore.tick();
+  resources = new Map([
+    [ 'safety', 0 ],
+    [ 'thoughts', 0 ]
+  ]);
+  ResourceStore.emitChange();
 };
 
 ///////////////////
@@ -75,6 +90,11 @@ AppDispatcher.register(function(payload) {
 
     case "SAVE":
       save();
+      break;
+
+    case "focus":
+      resources.set('thoughts', resources.get('thoughts') - 10);
+      ResourceStore.emitChange();
       break;
 
     default:

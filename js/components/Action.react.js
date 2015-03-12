@@ -18,11 +18,6 @@ var Action = React.createClass({
       return;
     }
 
-    // @TODO Should this be moved out to a pure action handler?
-    AppDispatcher.handleAction({
-      actionType: 'forage',
-    })
-
     intervalTracker = setInterval(this.progress, 10);
   },
 
@@ -37,20 +32,28 @@ var Action = React.createClass({
   },
 
   render: function() {
-    // @TODO Create a actions list component and move the button content out of here.
+    var self = this;
+    var callback = function() {
+      // @TODO Should this be moved out to a pure action handler?
+      AppDispatcher.handleAction({
+        actionType: self.props.label,
+      })
+      // No trigger effect until it can be redone with an animation, and work in Chrome.
+      // self.trigger();
+    }
+
     if (complete > 0) {
       return (
         <div className="action" >
-        <Progress completed={complete} />
-        Forage
+        {this.props.label}
         </div>
       );
     }
 
     return (
-      <div className="action" onClick={this.trigger} >
+      <div className="action" onClick={callback} >
         <Progress completed={complete} />
-        Forage
+        {this.props.label}
       </div>
     );
   }
