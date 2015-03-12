@@ -1,7 +1,10 @@
 var Immutable = require('immutable');
-var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 var _ = require('underscore');
+
+var AppDispatcher = require('../dispatcher/AppDispatcher');
+var ResourceDefinitions = require('../definitions/Resources');
+var UpgradeStore = require('../stores/UpgradeStore');
 
 // Resources
 var resources = new Immutable.Map();
@@ -11,7 +14,7 @@ var resources = new Immutable.Map();
 //////////////////
 var ResourceStore = _.extend({}, EventEmitter.prototype, {
   listResources: function() {
-    return [ 'safety', 'thoughts' ];
+    return [ 'safety', 'thoughts', 'focus' ];
   },
 
   getResources: function() {
@@ -41,13 +44,16 @@ var ResourceStore = _.extend({}, EventEmitter.prototype, {
   update: function() {
     var allRes = this.listResources();
     for (var i = 0; i < allRes.length; i++) {
-      // @TODO Move this out to a generic resource producer.
-      inc = 1;
-      if (allRes[i] === 'safety') {
-        inc = -1;
+      var baseRes = ResourceDefinitions.get(allRes[i]);
+      if (baseRes.production === undefined) {
+        continue;
       }
+
       var value = resources.get(allRes[i]) || 0;
-      resources = resources.set(allRes[i], value + inc);
+      resources = resources.set(allRes[i], value + baseRes.production);
+    }
+    if (UpgradeStore.getUpgrades().get('calm')) {
+      incrementResource('focus', 1);
     }
   },
 });
@@ -79,12 +85,15 @@ var load = function() {
 };
 
 var reset = function() {
-  resources = new Immutable.Map([
-    [ 'safety', 0 ],
-    [ 'thoughts', 0 ]
-  ]);
+  resources = new Immutable.Map();
+  save();
   ResourceStore.emitChange();
 };
+
+var incrementResource = function (res, value) {
+  var current = resources.get(res) || ResourceDefinitions.get(res).def;
+  resources = resources.set(res, current + value);
+}
 
 ///////////////////
 // Event handler //
@@ -103,7 +112,8 @@ AppDispatcher.register(function(payload) {
       break;
 
     case "focus":
-      resources = resources.set('thoughts', resources.get('thoughts') - 10);
+      incrementResource('thoughts', -5);
+      incrementResource('focus', 10);
       ResourceStore.emitChange();
       break;
 

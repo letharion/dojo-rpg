@@ -3,6 +3,7 @@ window.React = require('react');
 var ResourceList = require('./components/ResourceList.react');
 var ResetButton = require('./components/Reset.react');
 var ActionList = require('./components/ActionList.react');
+var UpgradeList = require('./components/UpgradeList.react');
 var InventoryItem = require('./components/InventoryItem.react');
 
 // @TODO It would probably be prudent to force load all stores here
@@ -34,4 +35,9 @@ React.render(
 React.render(
   <InventoryItem />,
   document.getElementById('inventory')
+)
+
+React.render(
+  <UpgradeList />,
+  document.getElementById('upgradeList')
 )

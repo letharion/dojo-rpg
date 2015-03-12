@@ -4,7 +4,7 @@ var Resource = React.createClass({
   mixins: [PureRenderMixin],
 
   render: function() {
-    var displayValue = (this.props.value / 100);
+    var displayValue = (Math.round(this.props.value) / 100);
     return <div className="resource">{this.props.label}: {displayValue}</div>
   }
 });
