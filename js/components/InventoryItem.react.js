@@ -1,12 +1,12 @@
+var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
+
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var PersonalInventoryStore = require('../stores/PersonalInventoryStore');
 
 var item;
-//
-// @TODO Work out how to get the mixin working here.
-// var PureRenderMixin = React.addons.PureRenderMixin;
+
 var InventoryItem = React.createClass({
-  //mixins: [PureRenderMixin],
+  mixins: [PureRenderMixin],
 
   getInitialState: function() {
     return PersonalInventoryStore.getItems();

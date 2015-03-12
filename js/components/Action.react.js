@@ -1,16 +1,12 @@
+var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
+
 var AppDispatcher = require('../dispatcher/AppDispatcher');
-var Progress = require('react-progressbar');
 
 var complete;
 var intervalTracker;
-// @TODO Work out how to get the mixin working here.
-// var PureRenderMixin = React.addons.PureRenderMixin;
+
 var Action = React.createClass({
-  //mixins: [PureRenderMixin],
-  componentDidMount: function() {
-    complete = complete || 0;
-    this.replaceState({ "complete": complete });
-  },
+  mixins: [PureRenderMixin],
 
   trigger: function() {
     // intervalTracker is set while the progressbar is running.
@@ -42,17 +38,8 @@ var Action = React.createClass({
       // self.trigger();
     }
 
-    if (complete > 0) {
-      return (
-        <div className="action" >
-        {this.props.label}
-        </div>
-      );
-    }
-
     return (
       <div className="action" onClick={callback} >
-        <Progress completed={complete} />
         {this.props.label}
       </div>
     );

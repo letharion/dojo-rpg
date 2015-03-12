@@ -1,7 +1,9 @@
+var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
+
 var GameActions = require('../actions/GameActions');
 
-// @TODO Use pure renderer.
 var ResetButton = React.createClass({
+  mixins: [PureRenderMixin],
 
   reset: function() {
     GameActions.reset();

@@ -1,9 +1,10 @@
+var Immutable = require('immutable');
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 var _ = require('underscore');
 
 // Resources
-var resources = new Map();
+var resources = new Immutable.Map();
 
 //////////////////
 // Store itself //
@@ -38,8 +39,16 @@ var ResourceStore = _.extend({}, EventEmitter.prototype, {
 
   // @TODO Hide from external callers
   update: function() {
-    resources.set('safety', resources.get('safety') - 1);
-    resources.set('thoughts', resources.get('thoughts') + 1);
+    var allRes = this.listResources();
+    for (var i = 0; i < allRes.length; i++) {
+      // @TODO Move this out to a generic resource producer.
+      inc = 1;
+      if (allRes[i] === 'safety') {
+        inc = -1;
+      }
+      var value = resources.get(allRes[i]) || 0;
+      resources = resources.set(allRes[i], value + inc);
+    }
   },
 });
 
@@ -50,26 +59,27 @@ var storageKey = 'resources';
 var save = function() {
   localStorage.setItem(
     storageKey,
-    JSON.stringify(Array.from(resources.entries()))
+    JSON.stringify(resources.toJS())
   );
 };
 
 var load = function() {
   data = localStorage.getItem(storageKey);
+
   if (data === null) {
     return;
   }
-  resources = new Map(JSON.parse(data));
+  resources = new Immutable.Map(JSON.parse(data));
 
   for (var i = 0; i < ResourceStore.listResources().length; i++) {
     if (resources.get(ResourceStore.listResources()[i]) === undefined) {
-      resources.set(ResourceStore.listResources()[i], 0);
+      resources = resources.set(ResourceStore.listResources()[i], 0);
     }
   }
 };
 
 var reset = function() {
-  resources = new Map([
+  resources = new Immutable.Map([
     [ 'safety', 0 ],
     [ 'thoughts', 0 ]
   ]);
@@ -93,7 +103,7 @@ AppDispatcher.register(function(payload) {
       break;
 
     case "focus":
-      resources.set('thoughts', resources.get('thoughts') - 10);
+      resources = resources.set('thoughts', resources.get('thoughts') - 10);
       ResourceStore.emitChange();
       break;
 

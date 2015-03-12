@@ -1,8 +1,10 @@
+var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
+
 var ResourceStore = require('../stores/ResourceStore.js');
 var Resource = require('./Resource.react');
 
-// @TODO Use pure renderer.
 var ResourceList = React.createClass({
+  mixins: [PureRenderMixin],
 
   componentDidMount: function() {
     ResourceStore.addChangeListener(this.onChange);
@@ -17,8 +19,9 @@ var ResourceList = React.createClass({
   },
 
   render: function() {
-    var resources = Array.from(this.state.entries()).map(function(a, b, c) {
-      return <Resource key={b} label={a[0]} value={a[1]} />
+    var resources = [];
+    this.state.map(function(value, key, map) {
+      resources.push(<Resource key={key} label={key} value={value} />);
     });
 
     return (
@@ -28,7 +31,5 @@ var ResourceList = React.createClass({
     );
   }
 });
-
-
 
 module.exports = ResourceList;

@@ -1,7 +1,7 @@
-// @TODO Work out how to get the mixin working here.
-// var PureRenderMixin = React.addons.PureRenderMixin;
+var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
+
 var Resource = React.createClass({
-  //mixins: [PureRenderMixin],
+  mixins: [PureRenderMixin],
 
   render: function() {
     var displayValue = (this.props.value / 100);

@@ -1,19 +1,16 @@
+var Immutable = require('immutable');
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 var Dice = require('../dice');
 var _ = require('underscore');
 
 // Resources
-var items = new Map();
+var items = new Immutable.Map();
 
 //////////////////
 // Store itself //
 //////////////////
 var PersonalInventoryStore = _.extend({}, EventEmitter.prototype, {
-  getItem: function(item) {
-    return items.get(item);
-  },
-
   getItems: function() {
     return items;
   },
@@ -36,7 +33,7 @@ var storageKey = 'inventory';
 var save = function() {
   localStorage.setItem(
     storageKey,
-    JSON.stringify(Array.from(items.entries()))
+    JSON.stringify(items.toJS())
   );
 };
 
@@ -45,11 +42,11 @@ var load = function() {
   if (data === null) {
     return;
   }
-  items = new Map(JSON.parse(data));
+  items = new Immutable.Map(JSON.parse(data));
 };
 
 var reset = function() {
-  items = new Map();
+  items = new Immutable.Map();
   save();
   PersonalInventoryStore.change();
 };
@@ -58,7 +55,7 @@ var forage = function() {
   var roll = Dice.roll(2);
   if (roll < 6) {
     PersonalInventoryStore.change();
-    items.set('stick', true);
+    items = items.set('stick', true);
   }
 };
 
