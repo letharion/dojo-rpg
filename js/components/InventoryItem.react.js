@@ -16,6 +16,10 @@ var InventoryItem = React.createClass({
     PersonalInventoryStore.addChangeListener(this.onChange);
   },
 
+  componentWillUnmountMount: function() {
+    PersonalInventoryStore.removeChangeListener(this.onChange);
+  },
+
   onChange: function() {
     this.replaceState(PersonalInventoryStore.getItems());
   },

@@ -26,6 +26,10 @@ var UpgradeStore = _.extend({}, EventEmitter.prototype, {
   addChangeListener: function(callback) {
     this.on('change', callback);
   },
+
+  removeChangeListener: function(callback) {
+    this.removeListener('change', callback);
+  },
 });
 
 ///////////////////////

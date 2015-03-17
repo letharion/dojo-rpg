@@ -1,0 +1,26 @@
+html {
+  font-size: 32px;
+  text-align: center;
+}
+
+.centered-container {
+  margin: 0px auto;
+  max-width: 300px;
+  width: 100%;
+}
+
+.mui-tab-item {
+  background-color: #8bc34a;
+}
+
+@media screen and (min-width: 900px) {
+  .centered-container {
+    margin: 0px auto;
+    max-width: 900px;
+    width: 100%;
+  }
+
+  .mui-tab-item {
+    float: left;
+  }
+}

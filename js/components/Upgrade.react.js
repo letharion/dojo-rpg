@@ -8,6 +8,7 @@ var Upgrade = React.createClass({
   render: function() {
     var self = this;
     var callback = function() {
+      self.props.callback();
       // @TODO Should this be moved out to a pure action handler?
       AppDispatcher.handleAction({
         actionType: self.props.label,

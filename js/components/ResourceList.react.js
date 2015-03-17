@@ -10,6 +10,10 @@ var ResourceList = React.createClass({
     ResourceStore.addChangeListener(this.onChange);
   },
 
+  componentWillUnmount: function() {
+    ResourceStore.removeChangeListener(this.onChange);
+  },
+
   getInitialState: function() {
     return ResourceStore.getResources();
   },

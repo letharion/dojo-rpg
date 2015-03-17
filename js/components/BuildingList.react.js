@@ -11,6 +11,10 @@ var BuildingList = React.createClass({
     ResourceStore.addChangeListener(this.onChange);
   },
 
+  componentWillUnmountMount: function() {
+    ResourceStore.removeChangeListener(this.onChange);
+  },
+
   onChange: function() {
     var newState = this.getBuildingState();
     this.replaceState(newState);

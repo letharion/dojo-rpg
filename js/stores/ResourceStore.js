@@ -40,6 +40,10 @@ var ResourceStore = _.extend({}, EventEmitter.prototype, {
     this.on('change', callback);
   },
 
+  removeChangeListener: function(callback) {
+    this.removeListener('change', callback);
+  },
+
   // @TODO Hide from external callers
   update: function() {
     var allRes = this.listResources();
