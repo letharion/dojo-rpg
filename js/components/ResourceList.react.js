@@ -29,7 +29,7 @@ var ResourceList = React.createClass({
     });
 
     return (
-      <div>
+      <div className="resource-list">
         {resources}
       </div>
     );

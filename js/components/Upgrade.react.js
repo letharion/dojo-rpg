@@ -5,17 +5,12 @@ var AppDispatcher = require('../dispatcher/AppDispatcher');
 var Upgrade = React.createClass({
   mixins: [PureRenderMixin],
 
-  render: function() {
-    var self = this;
-    var callback = function() {
-      self.props.callback();
-      // @TODO Should this be moved out to a pure action handler?
-      AppDispatcher.handleAction({
-        actionType: self.props.label,
-      })
-    }
+  callback: function() {
+    this.props.callback(this.props.label);
+  },
 
-    return <div className="upgrade" onClick={callback}>{this.props.label}</div>
+  render: function() {
+    return <div className="upgrade" onClick={this.callback}>{this.props.label}</div>
   }
 });
 

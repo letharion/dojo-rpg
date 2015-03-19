@@ -1,8 +1,10 @@
-var Immutable = require('immutable');
-var AppDispatcher = require('../dispatcher/AppDispatcher');
-var UpgradeDefinitions = require('../definitions/Upgrades');
-var EventEmitter = require('events').EventEmitter;
-var _ = require('underscore');
+var Immutable = require('immutable'),
+  _ = require('underscore'),
+  EventEmitter = require('events').EventEmitter,
+  AppDispatcher = require('../dispatcher/AppDispatcher'),
+  UpgradeDefinitions = require('../definitions/Upgrades'),
+  UpgradeConstants = require('../constants/UpgradeConstants')
+;
 
 // Upgrades
 var upgrades = new Immutable.Map();
@@ -75,8 +77,8 @@ AppDispatcher.register(function(payload) {
       save();
       break;
 
-    case "calm":
-      upgrades = upgrades.set('calm', true);
+    case UpgradeConstants.PERFORM_UPGRADE:
+      upgrades = upgrades.set(action.data, true);
       break;
 
     default:

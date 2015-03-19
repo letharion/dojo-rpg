@@ -1,10 +1,12 @@
 var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
 
-var ResourceStore = require('../stores/ResourceStore');
-var UpgradeDefinitions = require('../definitions/Upgrades');
-var UpgradeStore = require('../stores/UpgradeStore');
-var Upgrade = require('./Upgrade.react');
-var UpgradeDescription = require('./UpgradeDescription.react');
+var ResourceStore = require('../stores/ResourceStore'),
+  UpgradeDefinitions = require('../definitions/Upgrades'),
+  Upgrade = require('./Upgrade.react'),
+  UpgradeDescription = require('./UpgradeDescription.react'),
+  UpgradeActions = require('../actions/UpgradeActions'),
+  UpgradeStore = require('../stores/UpgradeStore')
+;
 
 var currentUpgrade;
 var activeUpgrade = function(label) {
@@ -29,7 +31,7 @@ var UpgradeList = React.createClass({
   },
 
   onChange: function() {
-    this.replaceState(this.getState());
+    this.setState(this.getState());
   },
 
   getState: function() {
@@ -40,28 +42,75 @@ var UpgradeList = React.createClass({
   },
 
   render: function() {
-    var upgrades = [];
-    var upgradeDescription;
-    if (currentUpgrade === 'calm') {
-      upgradeDescription = <UpgradeDescription text='fepfoeaw' />
+    var self = this,
+      upgrades = [],
+      size = this.props.size
+    ;
+
+    var retCallback = function() {
+      self.setState({ currentUpgrade: undefined });
+    };
+
+    var upgradeCallback = function() {
+      UpgradeActions.upgrade(self.state.currentUpgrade);
+    };
+
+    var selectUpgradeCallback = function(upgrade) {
+      self.setState({currentUpgrade: upgrade});
     }
+
     UpgradeDefinitions.map(function(value, key, map) {
-      var callback = function() {
-        activeUpgrade(key);
-      }
-      upgrades.push(<Upgrade key={key} label={key} callback={callback} />);
+      upgrades.push(<Upgrade key={key} label={key} callback={selectUpgradeCallback} />);
     });
 
-    return (
-      <div className="upgrades">
-        <div className="upgradesList">
-          {upgrades}
+    if (size === "tiny" || size === "small") {
+      if (this.state.currentUpgrade) {
+        return (
+          <div className="UpgradeDescription">
+            <UpgradeDescription
+              size={size}
+              name={currentUpgrade}
+              upgrade={UpgradeDefinitions.get(this.state.currentUpgrade)}
+              retCallback={retCallback}
+              upgradeCallback={upgradeCallback}
+            />
+          </div>
+        );
+      }
+
+      return (
+        <div className="upgrades">
+          <div className="upgradesList">
+            {upgrades}
+          </div>
         </div>
-        <div className="UpgradeDescription">
-          {upgradeDescription}
+      );
+    }
+    else {
+      var desc;
+      if (this.state.currentUpgrade) {
+        desc =
+          <div className="UpgradeDescription">
+            <UpgradeDescription
+              size={size}
+              name={currentUpgrade}
+              upgrade={UpgradeDefinitions.get(this.state.currentUpgrade)}
+              retCallback={retCallback}
+              upgradeCallback={upgradeCallback}
+            />
+          </div>
+        ;
+      }
+
+      return (
+        <div className="upgrades">
+          <div className="upgradesList">
+            {upgrades}
+          </div>
+          {desc}
         </div>
-      </div>
-    );
+      );
+    }
   }
 });
 
