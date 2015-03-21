@@ -1,5 +1,7 @@
-var AppDispatcher = require('../dispatcher/AppDispatcher');
-var UpgradeConstants = require('../constants/UpgradeConstants');
+var AppDispatcher = require('../dispatcher/AppDispatcher'),
+  UpgradeConstants = require('../constants/UpgradeConstants'),
+  ResourceStore = require('../stores/ResourceStore')
+;
 
 var UpgradeActions = {
   upgrade: function(upgrade) {

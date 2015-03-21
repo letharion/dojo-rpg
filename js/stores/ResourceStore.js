@@ -1,18 +1,19 @@
-var Immutable = require('immutable');
-var EventEmitter = require('events').EventEmitter;
-var _ = require('underscore');
+var Immutable = require('immutable'),
+  EventEmitter = require('events').EventEmitter,
+  _ = require('underscore'),
 
-var AppDispatcher = require('../dispatcher/AppDispatcher');
-var ResourceDefinitions = require('../definitions/Resources');
-var UpgradeStore = require('../stores/UpgradeStore');
+  AppDispatcher = require('../dispatcher/AppDispatcher'),
+  ResourceDefinitions = require('../definitions/Resources'),
+  UpgradeStore = require('../stores/UpgradeStore'),
+  UpgradeConstants = require('../constants/UpgradeConstants')
+;
 
-// Resources
 var resources = new Immutable.Map();
+var upgradesPayedFor = new Immutable.Map();
 
-//////////////////
-// Store itself //
-//////////////////
 var ResourceStore = _.extend({}, EventEmitter.prototype, {
+  dispatchToken: '',
+
   listResources: function() {
     return [ 'safety', 'thoughts', 'focus' ];
   },
@@ -20,9 +21,43 @@ var ResourceStore = _.extend({}, EventEmitter.prototype, {
   getResources: function() {
     return resources;
   },
+
   getResource: function(resource) {
     return resources.get(resource);
   },
+
+  getUpgradePayedFor: function(upgrade) {
+    return upgradesPayedFor.get(upgrade);
+  },
+
+  validateResourceAvailability: function(requirements) {
+    for (var key of requirements.keys()) {
+      var price = requirements.get(key);
+      if (this.getResource(key) < price) {
+        return false;
+      }
+    }
+    return true;
+  },
+
+  consumeResources: function(resources) {
+    // Do we have enough?
+    for (var key of resources.keys()) {
+      var price = resources.get(key);
+      if (this.getResource(key) < price) {
+        return false;
+      }
+    }
+
+    // All resources available, consume them.
+    for (var key of resources.keys()) {
+      var price = resources.get(key);
+      incrementResource(key, -price);
+    }
+
+    return true;
+  },
+
 
   start: function() {
     var self = this;
@@ -99,10 +134,7 @@ var incrementResource = function (res, value) {
   resources = resources.set(res, current + value);
 }
 
-///////////////////
-// Event handler //
-///////////////////
-AppDispatcher.register(function(payload) {
+ResourceStore.dispatchToken = AppDispatcher.register(function(payload) {
   var action = payload.action;
   var text;
 
@@ -113,6 +145,17 @@ AppDispatcher.register(function(payload) {
 
     case "SAVE":
       save();
+      break;
+
+    case UpgradeConstants.PERFORM_UPGRADE:
+      if (upgradesPayedFor.get(action.data.name) === true) {
+        console.log('This upgrade has already been payed for.');
+        break;
+      }
+      if (ResourceStore.consumeResources(action.data.costs)) {
+        upgradesPayedFor = upgradesPayedFor.set(action.data.name, true); 
+        ResourceStore.emitChange();
+      }
       break;
 
     case "focus":

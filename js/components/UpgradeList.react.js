@@ -60,7 +60,7 @@ var UpgradeList = React.createClass({
     }
 
     UpgradeDefinitions.map(function(value, key, map) {
-      upgrades.push(<Upgrade key={key} label={key} callback={selectUpgradeCallback} />);
+      upgrades.push(<Upgrade upgrade={value} key={key} label={key} callback={selectUpgradeCallback} />);
     });
 
     if (size === "tiny" || size === "small") {
@@ -94,7 +94,7 @@ var UpgradeList = React.createClass({
             <UpgradeDescription
               size={size}
               name={currentUpgrade}
-              upgrade={UpgradeDefinitions.get(this.state.currentUpgrade)}
+              upgrade={this.state.currentUpgrade}
               retCallback={retCallback}
               upgradeCallback={upgradeCallback}
             />

@@ -9,7 +9,8 @@
     "underscore": "^1.7.0",
     "react-progressbar": "^1.0.0",
     "immutable": "^3.0",
-    "material-ui": "^0.7"
+    "material-ui": "^0.7",
+    "classnames": "^1"
   },
   "devDependencies": {
     "browserify": "~6.2.0",

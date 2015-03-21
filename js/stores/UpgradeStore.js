@@ -6,12 +6,8 @@ var Immutable = require('immutable'),
   UpgradeConstants = require('../constants/UpgradeConstants')
 ;
 
-// Upgrades
 var upgrades = new Immutable.Map();
 
-//////////////////
-// Store itself //
-//////////////////
 var UpgradeStore = _.extend({}, EventEmitter.prototype, {
   getUpgrades: function() {
     return upgrades;
@@ -61,9 +57,6 @@ var reset = function() {
   UpgradeStore.emitChange();
 };
 
-///////////////////
-// Event handler //
-///////////////////
 AppDispatcher.register(function(payload) {
   var action = payload.action;
   var text;
@@ -78,7 +71,15 @@ AppDispatcher.register(function(payload) {
       break;
 
     case UpgradeConstants.PERFORM_UPGRADE:
-      upgrades = upgrades.set(action.data, true);
+      // @TODO Why doesn't it work to require this at the top?
+      var ResourceStore = require('../stores/ResourceStore');
+      // ResourceStore is responsible for ensuring we have consumed the
+      // appropriate resoures before we enable the upgrade.
+      AppDispatcher.waitFor([ ResourceStore.dispatchToken ]);
+      var payed = ResourceStore.getUpgradePayedFor(action.data.name);
+      if (payed === true) {
+        upgrades = upgrades.set(action.data.name, true);
+      }
       break;
 
     default:

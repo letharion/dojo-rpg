@@ -13,7 +13,7 @@ var UpgradeTable = React.createClass({
     return (
       <div className="upgradeTable">
         <div>Costs:</div>
-        <div>{upgrade.cost.reduce(this.mapToStr, "")}</div>
+        <div>{upgrade.costs.reduce(this.mapToStr, "")}</div>
         <div>{upgrade.effects.reduce(this.mapToStr, "")}</div>
         <div>{upgrade.requirements.reduce(this.mapToStr, "")}</div>
       </div>
