@@ -1,5 +1,5 @@
 html {
-  font-size: 32px;
+  font-size: 14px;
   text-align: center;
 }
 
@@ -13,6 +13,26 @@ html {
   background-color: #8bc34a;
 }
 
+@media screen and (min-width: 300px) {
+  html {
+    font-size: 24px;
+  }
+}
+
+@media screen and (min-width: 600px) {
+  .centered-container {
+    max-width: 600px;
+  }
+
+  .resource-list {
+    float: left;
+  }
+
+  .mui-tabs-container {
+    margin-left: 300px;
+  }
+}
+
 @media screen and (min-width: 900px) {
   .centered-container {
     margin: 0px auto;
@@ -20,7 +40,18 @@ html {
     width: 100%;
   }
 
-  .mui-tab-item {
+  .resource-list {
+    width: 33%;
+    float: left;
+  }
+
+  .upgrades {
+    width: 33%;
+    float: left;
+  }
+
+  .actionList {
+    width: 33%;
     float: left;
   }
 }
